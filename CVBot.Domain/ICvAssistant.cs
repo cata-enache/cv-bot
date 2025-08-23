@@ -4,5 +4,5 @@ namespace CVBot.Domain;
 
 public interface ICvAssistant
 {
-    public Task<Result<CvAssistantAnswer>> AnswerCvQuery(string query);
+    public Task<Result<CvAssistantAnswer>> AnswerCvQueryAsync(string query);
 }

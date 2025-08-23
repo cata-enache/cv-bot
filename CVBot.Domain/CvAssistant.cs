@@ -17,12 +17,12 @@ public class CvAssistant(ICvContextRetriever contextRetriever, IReasoningModel r
     private const string BasePrompt =
         "You are a spokesman on behalf of someone's CV. Rely only on the available context. Do not make any statements that cannot be backed by the provided context.";
 
-    public async Task<Result<CvAssistantAnswer>> AnswerCvQuery(string query)
+    public async Task<Result<CvAssistantAnswer>> AnswerCvQueryAsync(string query)
     {
         if (string.IsNullOrEmpty(query))
             return Result.Failure<CvAssistantAnswer>(EmptyQueryMessage);
 
-        var chunks = await contextRetriever.GetRelevantContext(query);
+        var chunks = await contextRetriever.GetRelevantContextAsync(query);
         if (chunks.Count == 0)
             return Result.Failure<CvAssistantAnswer>(NoContextAvailableMessage);
 
