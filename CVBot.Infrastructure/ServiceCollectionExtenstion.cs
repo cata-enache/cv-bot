@@ -69,14 +69,8 @@ public static class ServiceCollectionExtenstion
     private static IKernelBuilder UseOllamaInference(IKernelBuilder services, LanguageAiModelConfig aiModelConfig,
         string purpose)
     {
-        var httpClient = new HttpClient
-        {
-            BaseAddress = new Uri(aiModelConfig.Endpoint),
-            Timeout = TimeSpan.FromMinutes(10)
-        };
-
         return services.AddOllamaChatCompletion(aiModelConfig.ModelName,
-            httpClient: httpClient,
+            new Uri(aiModelConfig.Endpoint),
             serviceId: purpose);
     }
 
@@ -140,12 +134,8 @@ public static class ServiceCollectionExtenstion
     private static IKernelBuilder UseOllamaEmbedding(IKernelBuilder services, EmbeddingAiModelConfig aiModelConfig,
         string purpose)
     {
-        var httpClient = new HttpClient
-        {
-            BaseAddress = new Uri(aiModelConfig.Endpoint),
-            Timeout = TimeSpan.FromMinutes(10)
-        };
-
-        return services.AddOllamaEmbeddingGenerator(aiModelConfig.ModelName, httpClient, purpose);
+        return services.AddOllamaEmbeddingGenerator(aiModelConfig.ModelName, 
+            new Uri(aiModelConfig.Endpoint),
+            serviceId: purpose);
     }
 }
