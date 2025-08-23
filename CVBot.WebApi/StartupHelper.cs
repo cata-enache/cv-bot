@@ -1,7 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
+using CVBot.Infrastructure;
+
 namespace CVBot.WebApi;
 
-public class StartupHelper
+public class StartupHelper(IConfiguration configuration)
 {
+    [Experimental("SKEXP0010")]
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
@@ -10,6 +14,8 @@ public class StartupHelper
 
         services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(typeof(Application.AssemblyReference).Assembly));
+
+        services.AddInfrastructure(configuration);
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
