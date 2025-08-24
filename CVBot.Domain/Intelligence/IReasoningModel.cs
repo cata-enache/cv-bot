@@ -4,5 +4,5 @@ namespace CVBot.Domain.Intelligence;
 
 public interface IReasoningModel
 {
-    public Task<Result<string>> Answer(string prompt, string systemPrompt);
+    public Task<Result<string>> AnswerAsync(string prompt, string systemPrompt);
 }

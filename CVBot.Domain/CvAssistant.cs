@@ -28,7 +28,7 @@ public class CvAssistant(ICvContextRetriever contextRetriever, IReasoningModel r
 
 
         var contextualSystemPrompt = BasePrompt + Environment.NewLine + ConvertContextToPromptPatch(chunks);
-        var response = await reasoningModel.Answer(query, contextualSystemPrompt);
+        var response = await reasoningModel.AnswerAsync(query, contextualSystemPrompt);
 
         return response.IsFailure
             ? Result.Failure<CvAssistantAnswer>(FailureToReplyMessage)
