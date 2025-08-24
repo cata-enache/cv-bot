@@ -3,6 +3,8 @@ using CVBot.WebApi;
 var builder = WebApplication.CreateBuilder(args);
 
 var startup = new StartupHelper(builder.Configuration);
+startup.RegisterConfigs(builder.Services);
+
 #pragma warning disable SKEXP0010
 startup.ConfigureServices(builder.Services);
 #pragma warning restore SKEXP0010

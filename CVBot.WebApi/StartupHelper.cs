@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using CVBot.Infrastructure;
+using CVBot.Infrastructure.AiConfigurations;
 
 namespace CVBot.WebApi;
 
@@ -30,5 +31,12 @@ public class StartupHelper(IConfiguration configuration)
         app.UseRouting();
         app.UseAuthorization();
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+    }
+
+    public void RegisterConfigs(IServiceCollection services)
+    {
+        services.Configure<AiConfig>(configuration.GetRequiredSection(nameof(AiConfig)));
+        services.Configure<EmbeddingAiModelConfig>(
+            configuration.GetRequiredSection($"{nameof(AiConfig)}:{nameof(AiConfig.EmbeddingAiModel)}"));
     }
 }
