@@ -15,7 +15,11 @@ public class CvContextRetriever(
     public async Task<IReadOnlyCollection<CvContextChunk>> GetRelevantContextAsync(string query)
     {
         var queryEmbeddings = await embeddingGenerator.GenerateAsync([query]);
-        var results = await cvSemanticStoreReader.SearchInCvSemantically(queryEmbeddings);
+        var searchEmbeddings = queryEmbeddings.FirstOrDefault()?.Vector;
+        if(searchEmbeddings is null)
+            return Enumerable.Empty<CvContextChunk>().ToImmutableList();
+        
+        var results = await cvSemanticStoreReader.SearchInCvSemantically(searchEmbeddings.Value);
         
         return results.Select(x => new CvContextChunk(x.Content))
             .ToImmutableList();

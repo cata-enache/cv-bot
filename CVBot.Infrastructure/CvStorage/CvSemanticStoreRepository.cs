@@ -25,16 +25,19 @@ public class CvSemanticStoreRepository(
 
     private InMemoryCollection<ulong, SemanticCvParagraph> GetCvCollectionAsync() =>
         vectorStore.GetCollection<ulong, SemanticCvParagraph>(CvCollectionName,
-            new VectorStoreCollectionDefinition()
+            new VectorStoreCollectionDefinition
             {
                 Properties =
                 [
-                    new VectorStoreVectorProperty(nameof(SemanticCvParagraph.Embedding),
-                        embeddingModelConfig.Value.EmbeddingsDimension)
+                    new VectorStoreVectorProperty(
+                        name: nameof(SemanticCvParagraph.Embeddings),
+                        dimensions: embeddingModelConfig.Value.EmbeddingsDimension,
+                        type: typeof(ReadOnlyMemory<float>)
+                    )
                 ]
             });
 
-    public async Task<IEnumerable<SemanticCvParagraph>> SearchInCvSemantically(GeneratedEmbeddings<Embedding<float>> searchEmbeddings)
+    public async Task<IEnumerable<SemanticCvParagraph>> SearchInCvSemantically(ReadOnlyMemory<float> searchEmbeddings)
     {
         var collection = GetCvCollectionAsync();
         await collection.EnsureCollectionExistsAsync();
