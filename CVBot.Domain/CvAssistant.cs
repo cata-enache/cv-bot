@@ -13,9 +13,12 @@ public class CvAssistant(ICvContextRetriever contextRetriever, IReasoningModel r
 
     private const string NoContextAvailableMessage =
         "I'm sorry but I do not have enough information to answer this query.";
-    
+
     private const string BasePrompt =
         "You are a spokesman on behalf of someone's CV. Rely only on the available context. Do not make any statements that cannot be backed by the provided context.";
+
+    private const string FormatPrompt =
+        "Format your answer to plain text, and structure it comprehensive on paragraphs.";
 
     public async Task<Result<CvAssistantAnswer>> AnswerCvQueryAsync(string query)
     {
@@ -27,7 +30,12 @@ public class CvAssistant(ICvContextRetriever contextRetriever, IReasoningModel r
             return Result.Failure<CvAssistantAnswer>(NoContextAvailableMessage);
 
 
-        var contextualSystemPrompt = BasePrompt + Environment.NewLine + ConvertContextToPromptPatch(chunks);
+        var contextualSystemPrompt = BasePrompt
+                                     + Environment.NewLine
+                                     + FormatPrompt
+                                     + Environment.NewLine
+                                     + ConvertContextToPromptPatch(chunks);
+
         var response = await reasoningModel.AnswerAsync(query, contextualSystemPrompt);
 
         return response.IsFailure
@@ -42,7 +50,7 @@ public class CvAssistant(ICvContextRetriever contextRetriever, IReasoningModel r
 
         var promptContextualPatch =
             $"The following parts of the cv you represent were found relevant in some capacity to user's query:{Environment.NewLine}";
-        
+
         var stringifiedChunkList = string.Join(Environment.NewLine, chunks.Select((c, i) => $"{i}. {c.Value}"));
 
         return promptContextualPatch + stringifiedChunkList;

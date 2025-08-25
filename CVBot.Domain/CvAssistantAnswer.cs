@@ -8,5 +8,5 @@ public record CvAssistantAnswer(string Answer, IReadOnlyCollection<CvContextChun
                                          + Environment.NewLine
                                          + "Response based on the following sources: "
                                          + Environment.NewLine
-                                         + string.Join(Environment.NewLine, Sources);
+                                         + string.Join(Environment.NewLine, Sources.Select(s => s.Value));
 };
