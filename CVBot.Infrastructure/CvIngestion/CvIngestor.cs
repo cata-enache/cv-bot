@@ -34,8 +34,8 @@ public class CvIngestor(
             var embeddedParagraphs = await embeddingGenerator.GenerateAsync(paragraphs,
                 new EmbeddingGenerationOptions() { Dimensions = embeddingAiModelConfig.Value.EmbeddingsDimension });
 
-            var semanticParagraphs = paragraphs.Zip(embeddedParagraphs).Select(zippedParagraph =>
-                new SemanticCvParagraph(Content: zippedParagraph.First, Embedding: zippedParagraph.Second));
+            var semanticParagraphs = paragraphs.Zip(embeddedParagraphs).Select((zippedParagraph, index) =>
+                new SemanticCvParagraph( (ulong) index, zippedParagraph.First, zippedParagraph.Second.Vector));
 
             await cvSemanticStoreWriter.SetCvContentAsync(semanticParagraphs);
 
