@@ -1,9 +1,18 @@
 using System.ClientModel;
 using System.Diagnostics.CodeAnalysis;
+using CVBot.Application.CvIngestion;
+using CVBot.Domain;
+using CVBot.Domain.CvContext;
+using CVBot.Domain.Intelligence;
 using CVBot.Infrastructure.AiConfigurations;
+using CVBot.Infrastructure.CvIngestion;
+using CVBot.Infrastructure.CvRetrieval;
+using CVBot.Infrastructure.CvStorage;
+using CVBot.Infrastructure.Intelligence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.Connectors.InMemory;
 using Newtonsoft.Json.Linq;
 using OpenAI;
 
@@ -18,6 +27,9 @@ public static class ServiceCollectionExtenstion
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.RegisterLanguageModels(configuration);
+        services.RegisterDomainServices();
+        services.RegisterApplicationServices();
+        services.RegisterInfrastructureServices();
 
         return services;
     }
@@ -137,5 +149,31 @@ public static class ServiceCollectionExtenstion
         return services.AddOllamaEmbeddingGenerator(aiModelConfig.ModelName, 
             new Uri(aiModelConfig.Endpoint),
             serviceId: purpose);
+    }
+
+    private static IServiceCollection RegisterDomainServices(this IServiceCollection services)
+    {
+        services.AddTransient<ICvAssistant, CvAssistant>();
+        services.AddTransient<IReasoningModel, ReasoningModel>();
+        
+        return services;
+    }
+
+    private static IServiceCollection RegisterApplicationServices(this IServiceCollection services)
+    {
+        services.AddTransient<ICvIngestor, CvIngestor>();
+        
+        return services;
+    }
+
+    private static IServiceCollection RegisterInfrastructureServices(this IServiceCollection services)
+    {
+        services.AddSingleton<InMemoryVectorStore>();
+        services.AddTransient<CvSemanticStoreRepository>();
+        services.AddTransient<ICvSemanticStoreWriter>(provider => provider.GetRequiredService<CvSemanticStoreRepository>());
+        services.AddTransient<ICvSemanticStoreReader>(provider => provider.GetRequiredService<CvSemanticStoreRepository>());
+        services.AddTransient<ICvContextRetriever, CvContextRetriever>();
+        
+        return services;
     }
 }
